@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  pgsql_db:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: ${CONTAINER_NAME}
+    hostname: ${DB_HOST}
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    volumes:
+      - db_vol:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+
+  liquibase:
+    image: liquibase/liquibase:4.25
+    volumes:
+      - ./changelog:/liquibase/changelog
+      - ./liquibase/liquibase.properties:/liquibase/liquibase.properties
+    depends_on:
+      - pgsql_db
+    networks:
+      - postgres_network
+    entrypoint: ["liquibase", "--defaultsFile=/liquibase/liquibase.properties", "update"]
+
+  db_initializer:
+    image: postgres:${POSTGRES_VERSION}-alpine
+    container_name: db_initializer
+    depends_on:
+      - liquibase
+    volumes:
+      - ./seed:/seed
+      - ./.env:/.env
+      - ./scripts:/scripts
+    networks:
+      - postgres_network
+    entrypoint: ["/bin/bash", "scripts/seedSetup.sh"]
+
+volumes:
+  db_vol:
+
+networks:
+  postgres_network:
+    name: postgres_network
+    driver: bridge

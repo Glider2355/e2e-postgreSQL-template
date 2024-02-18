@@ -1,0 +1,9 @@
+.env
+backup
+.gauge
+logs
+node_modules
+reports
+/test-results/
+/playwright-report/
+/playwright/.cache/
