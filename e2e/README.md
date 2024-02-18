@@ -2,13 +2,13 @@
 
 ## 処理の流れ
 
-PostgreSQLを想定したgauge + playwright + typescriptのe2eテスト環境です  
+PostgreSQLを想定したgauge + playwright + typescriptのe2eテスト環境です
 テスト実行は以下の流れで実行されます
 
 - DBバックアップを取る
 - 全てのテーブルをtrancateする
 - テスト実行
-- DBをバックアップを下に復元
+- DBをバックアップを元に復元
 
 ## フォルダ構成
 
