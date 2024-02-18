@@ -7,7 +7,7 @@ PostgreSQLを想定したgauge + playwright + typescriptのe2eテスト環境で
 
 - DBバックアップを取る
 - 全てのテーブルをtrancateする
-- テスト実行
+- テスト実行(テストごとにテストデータのinsertとtrancateを行う)
 - DBをバックアップを元に復元
 
 ## フォルダ構成
