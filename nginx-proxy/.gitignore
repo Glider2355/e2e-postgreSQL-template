@@ -5,3 +5,4 @@ certbot
 proxy/var/log
 proxy/etc/nginx/ticket-keys
 minio
+san.cnf
