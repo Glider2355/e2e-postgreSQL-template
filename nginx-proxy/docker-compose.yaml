@@ -1,0 +1,40 @@
+# 本番、開発環境共通の設定
+version: '3.8'
+
+services:
+  nginx-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy/etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./proxy/etc/logrotate.d/nginx:/etc/logrotate.d/nginx
+      - ./proxy/var/log/nginx:/var/log/nginx
+      - ./proxy/etc/letsencrypt:/etc/letsencrypt
+      - ./proxy/etc/nginx/ticket-keys:/etc/nginx/ticket-keys # 秘密鍵を保存するディレクトリ
+    networks:
+      - dev_network
+    restart: always
+    env_file:
+      - ./.env
+
+  minio:
+    image: minio/minio
+    volumes:
+      - ./minio/data:/data # MinIOのデータを保存するディレクトリ
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    command: server /data
+    restart: always
+
+networks:
+  dev_network:
+    driver: bridge
+    name: dev_network
+

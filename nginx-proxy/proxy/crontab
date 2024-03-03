@@ -1,0 +1,5 @@
+# ログローテーションの作成
+0 0 * * * logrotate /etc/logrotate.d/nginx
+
+# ticket-keyを作成
+0 0 * * * /bin/sh /bin/ticket-key-generate.sh

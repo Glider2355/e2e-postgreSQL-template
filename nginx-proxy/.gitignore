@@ -1,0 +1,7 @@
+.env
+proxy/etc/letsencrypt
+proxy/etc/nginx/conf.d/default.conf
+certbot
+proxy/var/log
+proxy/etc/nginx/ticket-keys
+minio

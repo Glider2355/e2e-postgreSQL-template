@@ -1,0 +1,15 @@
+# 本番環境の設定
+# docker compose -f dokcer-compose.yaml -f docker-compose.prod.yaml up -d
+
+version: '3.8'
+services:
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./proxy/etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'if [ ! -e /etc/letsencrypt/live/$$DOMAIN ]; then certbot certonly --webroot --webroot-path=/var/www/certbot -d $$DOMAIN --email $$EMAIL --agree-tos --no-eff-email; fi; while :; do sleep 12h & wait $${!}; certbot renew; done;'"
+    environment:
+      - DOMAIN=${DOMAIN}
+      - EMAIL=${EMAIL}
+    restart: always
