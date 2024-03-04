@@ -44,7 +44,8 @@ docker compose -f dokcer-compose.yaml -f docker-compose.prod.yaml up -d
 
 ## 自己証明書を登録する
 proxy/etc/letsencrypt/liveにあるfullchain.pemをキーチェーンアクセスで「常に信頼」を設定する
+etc/hostsにドメインを設定する
 
 ## 参考
-以下の内容を下に設定しました  
+以下の内容を下に設定しました
 https://ssl-config.mozilla.org/#server=nginx&version=1.17.7&config=modern&openssl=1.1.1k&guideline=5.7
