@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  openapi-generator:
+    image: openapitools/openapi-generator-cli
+    volumes:
+      - .:/app
+    command: >
+      generate
+      -i /app/openapi.yaml
+      -g nodejs-express-server
+
+  prism-mock-server:
+    image: stoplight/prism:latest
+    volumes:
+      - ./openapi.yaml:/openapi.yaml
+      - ./paths:/paths
+      - ./components:/components
+    command: mock -h 0.0.0.0 /openapi.yaml
+    ports:
+      - "4010:4010"
