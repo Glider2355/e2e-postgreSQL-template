@@ -6,3 +6,4 @@ proxy/var/log
 proxy/etc/nginx/ticket-keys
 minio
 san.cnf
+fluent-bit/etc/fluent-bit.conf

@@ -1,13 +1,24 @@
-# 自己署名証明書を生成するためのMakefile
 DOMAIN ?= $(shell grep DOMAIN .env | cut -d '=' -f2)
 CERT_DIR ?= ./proxy/etc/letsencrypt/live/$(DOMAIN)
 KEY_FILE := ${CERT_DIR}/privkey.pem
 CERT_FILE := ${CERT_DIR}/fullchain.pem
 
-.PHONY: certs clean
+# newRelicの設定
+CONFIG_FILE="./fluent-bit/etc/fluent-bit.conf"
+NEW_RELIC_LICENSE_KEY ?= $(shell grep NEW_RELIC_LICENSE_KEY .env | cut -d '=' -f2)
+
+.PHONY:setup certs clean
+
+setup:
+	@echo "fluent-bitの設定ファイルを生成します"
+	# 設定ファイルが存在しない場合は作成
+	if [ ! -f "$(CONFIG_FILE)" ]; then \
+    	touch "$(CONFIG_FILE)"; \
+	fi
+	NEW_RELIC_LICENSE_KEY=$(NEW_RELIC_LICENSE_KEY) envsubst '$$NEW_RELIC_LICENSE_KEY' < ./fluent-bit/templates/fluent-bit.conf.template > $(CONFIG_FILE)
+	@echo "fluent-bitの設定ファイルを生成しました"
 
 certs: $(KEY_FILE) $(CERT_FILE)
-
 $(KEY_FILE) $(CERT_FILE):
 	@echo "$(DOMAIN)で自己署名証明書を作成します"
 	mkdir -p $(CERT_DIR)

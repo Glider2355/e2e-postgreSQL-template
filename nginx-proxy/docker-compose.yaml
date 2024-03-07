@@ -33,6 +33,19 @@ services:
     command: server /data
     restart: always
 
+  fluent-bit:
+    image: newrelic/newrelic-fluentbit-output:latest
+    volumes:
+      - ./fluent-bit/etc:/fluent-bit/etc
+      - ./proxy/var/log/nginx:/var/log/nginx
+    environment:
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_INSIGHTS_INSERT_KEY: ${NEW_RELIC_INSIGHTS_INSERT_KEY}
+    depends_on:
+      - nginx-proxy
+    networks:
+      - dev_network
+
 networks:
   dev_network:
     driver: bridge

@@ -1,0 +1,21 @@
+[SERVICE]
+    Flush        1
+    Daemon       Off
+    Log_Level    info
+    Parsers_File parsers.conf
+
+[INPUT]
+    Name             tail
+    Path             /var/log/nginx/access.log
+    Parser           nginx
+    Tag              nginx.access
+
+[FILTER]
+    Name   record_modifier
+    Match  *
+    Record hostname ${HOSTNAME}
+
+[OUTPUT]
+    Name   newrelic
+    Match  *
+    licenseKey ${NEW_RELIC_LICENSE_KEY}
