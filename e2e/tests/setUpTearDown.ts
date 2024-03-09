@@ -1,13 +1,20 @@
 import { query } from './dbClient';
-import { AfterSpec, BeforeSpec, Step } from "gauge-ts";
+import { AfterSpec, BeforeSpec, ExecutionContext, Specification, Step } from "gauge-ts";
 import { insertAllCsvInDir } from './dbClient';
 import path from 'path';
 
 export default class SetupAndTearDown {
   // テスト実行前後でデータベースの全てのテーブルをクリアする
   @BeforeSpec()
-  public async clearDatabaseTablesBeforeSpec() {
+  public async clearDatabaseTablesBeforeSpec(context: ExecutionContext) {
     await this.clearDatabaseTables();
+    const spec = context.getCurrentSpec();
+
+    if (!spec) {
+      throw new Error('spec is not found');
+    }
+
+    const specFilePath = spec.getFileName();
   }
   @AfterSpec()
   public async clearDatabaseTablesAfterSpec() {
