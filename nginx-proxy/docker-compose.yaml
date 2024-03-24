@@ -22,28 +22,25 @@ services:
       - ./.env
 
   keycloak:
-    image: jboss/keycloak
+    image: quay.io/keycloak/keycloak:latest
     environment:
-      DB_VENDOR: POSTGRES
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+      DB_VENDOR: postgres
       DB_ADDR: keycloak-db
       DB_DATABASE: keycloak
-      DB_USER: ${KEYCLOAK_DB_USER}
+      DB_USER: keycloak
       DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
-      KEYCLOAK_USER: ${KEYCLOAK_ADMIN_USER}
-      KEYCLOAK_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      PROXY_ADDRESS_FORWARDING: "true"
-    ports:
-      - "8080:8080"
     depends_on:
       - keycloak-db
     networks:
       - dev_network
 
   keycloak-db:
-    image: postgres
+    image: postgres:12
     environment:
       POSTGRES_DB: keycloak
-      POSTGRES_USER: ${KEYCLOAK_DB_USER}
+      POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
     volumes:
       - keycloak-db:/var/lib/postgresql/data
