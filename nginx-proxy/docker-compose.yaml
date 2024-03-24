@@ -21,6 +21,38 @@ services:
     env_file:
       - ./.env
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      DB_VENDOR: postgres
+      DB_ADDR: keycloak-db
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    ports:
+        - 8080:8080
+    command:
+        - start-dev
+    depends_on:
+      - keycloak-db
+    networks:
+      - dev_network
+
+  keycloak-db:
+    image: postgres:16.2
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    ports:
+      - 5432:5432
+    volumes:
+      - keycloak-db:/var/lib/postgresql/data
+    networks:
+      - dev_network
+
   minio:
     image: minio/minio
     volumes:
@@ -40,11 +72,13 @@ services:
       - ./proxy/var/log/nginx:/var/log/nginx
     environment:
       NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
-      NEW_RELIC_INSIGHTS_INSERT_KEY: ${NEW_RELIC_INSIGHTS_INSERT_KEY}
     depends_on:
       - nginx-proxy
     networks:
       - dev_network
+
+volumes:
+  keycloak-db:
 
 networks:
   dev_network:

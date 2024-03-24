@@ -2,6 +2,10 @@
 map $http_host $proxy_target {
     "api.${DOMAIN}" "http://${BACKEND_CONTAINER_NAME}:${BACKEND_PORT}";
     "${DOMAIN}" "http://${FRONTEND_CONTAINER_NAME}:${FRONTEND_PORT}";
+
+    # ログイン、サインアップはkeycloackにリダイレクト
+    "login.${DOMAIN}" "http://${KEYCLOAK_CONTAINER_NAME}:${KEYCLOAK_PORT}/auth/realms/${REALM_NAME}/protocol/openid-connect/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${KEYCLOAK_REDIRECT_URI}";
+    "signup.${DOMAIN}" "http://${KEYCLOAK_CONTAINER_NAME}:${KEYCLOAK_PORT}/auth/realms/${REALM_NAME}/protocol/openid-connect/registrations?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${KEYCLOAK_REDIRECT_URI}";
 }
 
 # HTTPサーバー設定
@@ -57,6 +61,12 @@ server {
     # リゾルバーのIPアドレスを置き換える(Dockerの内部DNSサーバー)
     resolver 127.0.0.11;
 
+    # api.${DOMAIN}と${DOMAIN}の場合だけ認証認可を必須とする
+    if ($http_host ~* ^(api\.|)$DOMAIN) {
+        auth_request /auth;
+        error_page 401 = @error401;
+    }
+
     # リバースプロキシの設定
     location / {
         proxy_pass $proxy_target;
@@ -64,5 +74,19 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 認証リクエストを送信
+    location = /auth {
+        internal;
+        proxy_pass http://${KEYCLOAK_CONTAINER_NAME}:${KEYCLOAK_PORT}/auth/realms/${REALM_NAME}/protocol/openid-connect/token;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header Host $host;
+    }
+
+    # ログインページにリダイレクト
+    location @error401 {
+        return 302 http://login.${DOMAIN}$request_uri;
     }
 }
