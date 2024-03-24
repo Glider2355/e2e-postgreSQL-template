@@ -20,7 +20,7 @@ openssl rand -out $KEY_PATH 80
 cron -f &
 
 # /etc/nginx/conf.d/default.conf.template から /etc/nginx/conf.d/default.conf を生成
-envsubst '$$DOMAIN $$BACKEND_CONTAINER_NAME $$BACKEND_PORT $$FRONTEND_CONTAINER_NAME $$FRONTEND_PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+envsubst '$$DOMAIN $$BACKEND_CONTAINER_NAME $$BACKEND_PORT $$FRONTEND_CONTAINER_NAME $$FRONTEND_PORT $$KEYCLOAK_CONTAINER_NAME $$KEYCLOAK_PORT $$REALM_NAME $$CLIENT_ID $$KEYCLOAK_REDIRECT_URI' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 
 # Nginxをフォアグラウンドで実行
 nginx -g 'daemon off;'
