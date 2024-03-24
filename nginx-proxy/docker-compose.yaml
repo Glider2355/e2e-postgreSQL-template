@@ -24,13 +24,17 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     environment:
-      KEYCLOAK_USER: ${KEYCLOAK_USER}
-      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       DB_VENDOR: postgres
       DB_ADDR: keycloak-db
       DB_DATABASE: keycloak
       DB_USER: keycloak
       DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    ports:
+        - 8080:8080
+    command:
+        - start-dev
     depends_on:
       - keycloak-db
     networks:
@@ -66,11 +70,13 @@ services:
       - ./proxy/var/log/nginx:/var/log/nginx
     environment:
       NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
-      NEW_RELIC_INSIGHTS_INSERT_KEY: ${NEW_RELIC_INSIGHTS_INSERT_KEY}
     depends_on:
       - nginx-proxy
     networks:
       - dev_network
+
+volumes:
+  keycloak-db:
 
 networks:
   dev_network:
