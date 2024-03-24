@@ -22,6 +22,15 @@ FRONTEND_PORT=3000
 # minioの設定
 MINIO_ACCESS_KEY=minio
 MINIO_SECRET_KEY=minio123
+
+# newRelicの設定
+NEW_RELIC_LICENSE_KEY=123
+
+# keycloakの設定
+KEYCLOAK_ADMIN_USER=keycloak
+KEYCLOAK_ADMIN_PASSWORD=keycloak123
+KEYCLOAK_DB_USER=user
+KEYCLOAK_DB_PASSWORD=password
 ```
 
 以下のコマンドで自己証明書を作成する
