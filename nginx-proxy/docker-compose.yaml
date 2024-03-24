@@ -46,6 +46,8 @@ services:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    ports:
+      - 5432:5432
     volumes:
       - keycloak-db:/var/lib/postgresql/data
     networks:
